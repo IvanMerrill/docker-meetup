@@ -1,0 +1,31 @@
+version: '3.9'
+
+volumes:
+  app-logs:
+
+services:
+
+  tulips2door:
+    image: almightygiraffe/tulips2door:1.3
+    ports:
+      - "8080:8080"
+    container_name: tulips2door
+    restart: unless-stopped
+    volumes:
+      - app-logs:/var/log
+
+  am:
+    image: autometrics/am:latest
+    ports:
+      - "6789:6789"
+    container_name: am
+    command: "start host.docker.internal:8080"
+    environment: 
+      - LISTEN_ADDRESS=0.0.0.0:6789
+    restart: unless-stopped
+    volumes:
+      - app-logs:/var/log
+
+
+  loadtest:
+    image: aparv2/loadtest:latest 
